@@ -5,10 +5,16 @@ package gfs;
 service MasterServerToClient {
     rpc ListFiles(String) returns (String) {}
     rpc CreateFile(String) returns (String) {}
+    rpc AppendFile(String) returns (String) {}
+    rpc CreateChunk(String) returns (String) {}
+    rpc ReadFile(String) returns (String) {}
 }
 
 service ChunkServerToClient {
     rpc Create(String) returns (String) {}
+    rpc GetChunkSpace(String) returns (String) {}
+    rpc Append(String) returns (String) {}
+    rpc Read(String) returns (String) {}    
 }
 
 

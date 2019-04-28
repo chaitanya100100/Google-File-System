@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='gfs',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\tgfs.proto\x12\x03gfs\"\x14\n\x06String\x12\n\n\x02st\x18\x01 \x01(\t\"\x07\n\x05\x45mpty2i\n\x14MasterServerToClient\x12\'\n\tListFiles\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12(\n\nCreateFile\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x32;\n\x13\x43hunkServerToClient\x12$\n\x06\x43reate\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\tgfs.proto\x12\x03gfs\"\x14\n\x06String\x12\n\n\x02st\x18\x01 \x01(\t\"\x07\n\x05\x45mpty2\xe6\x01\n\x14MasterServerToClient\x12\'\n\tListFiles\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12(\n\nCreateFile\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12(\n\nAppendFile\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12)\n\x0b\x43reateChunk\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12&\n\x08ReadFile\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x32\xb2\x01\n\x13\x43hunkServerToClient\x12$\n\x06\x43reate\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12+\n\rGetChunkSpace\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12$\n\x06\x41ppend\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12\"\n\x04Read\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x62\x06proto3')
 )
 
 
@@ -106,8 +106,8 @@ _MASTERSERVERTOCLIENT = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=49,
-  serialized_end=154,
+  serialized_start=50,
+  serialized_end=280,
   methods=[
   _descriptor.MethodDescriptor(
     name='ListFiles',
@@ -127,6 +127,33 @@ _MASTERSERVERTOCLIENT = _descriptor.ServiceDescriptor(
     output_type=_STRING,
     serialized_options=None,
   ),
+  _descriptor.MethodDescriptor(
+    name='AppendFile',
+    full_name='gfs.MasterServerToClient.AppendFile',
+    index=2,
+    containing_service=None,
+    input_type=_STRING,
+    output_type=_STRING,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='CreateChunk',
+    full_name='gfs.MasterServerToClient.CreateChunk',
+    index=3,
+    containing_service=None,
+    input_type=_STRING,
+    output_type=_STRING,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='ReadFile',
+    full_name='gfs.MasterServerToClient.ReadFile',
+    index=4,
+    containing_service=None,
+    input_type=_STRING,
+    output_type=_STRING,
+    serialized_options=None,
+  ),
 ])
 _sym_db.RegisterServiceDescriptor(_MASTERSERVERTOCLIENT)
 
@@ -139,13 +166,40 @@ _CHUNKSERVERTOCLIENT = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=1,
   serialized_options=None,
-  serialized_start=156,
-  serialized_end=215,
+  serialized_start=283,
+  serialized_end=461,
   methods=[
   _descriptor.MethodDescriptor(
     name='Create',
     full_name='gfs.ChunkServerToClient.Create',
     index=0,
+    containing_service=None,
+    input_type=_STRING,
+    output_type=_STRING,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='GetChunkSpace',
+    full_name='gfs.ChunkServerToClient.GetChunkSpace',
+    index=1,
+    containing_service=None,
+    input_type=_STRING,
+    output_type=_STRING,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Append',
+    full_name='gfs.ChunkServerToClient.Append',
+    index=2,
+    containing_service=None,
+    input_type=_STRING,
+    output_type=_STRING,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Read',
+    full_name='gfs.ChunkServerToClient.Read',
+    index=3,
     containing_service=None,
     input_type=_STRING,
     output_type=_STRING,

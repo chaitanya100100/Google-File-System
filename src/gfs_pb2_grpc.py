@@ -24,6 +24,21 @@ class MasterServerToClientStub(object):
         request_serializer=gfs__pb2.String.SerializeToString,
         response_deserializer=gfs__pb2.String.FromString,
         )
+    self.AppendFile = channel.unary_unary(
+        '/gfs.MasterServerToClient/AppendFile',
+        request_serializer=gfs__pb2.String.SerializeToString,
+        response_deserializer=gfs__pb2.String.FromString,
+        )
+    self.CreateChunk = channel.unary_unary(
+        '/gfs.MasterServerToClient/CreateChunk',
+        request_serializer=gfs__pb2.String.SerializeToString,
+        response_deserializer=gfs__pb2.String.FromString,
+        )
+    self.ReadFile = channel.unary_unary(
+        '/gfs.MasterServerToClient/ReadFile',
+        request_serializer=gfs__pb2.String.SerializeToString,
+        response_deserializer=gfs__pb2.String.FromString,
+        )
 
 
 class MasterServerToClientServicer(object):
@@ -44,6 +59,27 @@ class MasterServerToClientServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def AppendFile(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def CreateChunk(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def ReadFile(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_MasterServerToClientServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -54,6 +90,21 @@ def add_MasterServerToClientServicer_to_server(servicer, server):
       ),
       'CreateFile': grpc.unary_unary_rpc_method_handler(
           servicer.CreateFile,
+          request_deserializer=gfs__pb2.String.FromString,
+          response_serializer=gfs__pb2.String.SerializeToString,
+      ),
+      'AppendFile': grpc.unary_unary_rpc_method_handler(
+          servicer.AppendFile,
+          request_deserializer=gfs__pb2.String.FromString,
+          response_serializer=gfs__pb2.String.SerializeToString,
+      ),
+      'CreateChunk': grpc.unary_unary_rpc_method_handler(
+          servicer.CreateChunk,
+          request_deserializer=gfs__pb2.String.FromString,
+          response_serializer=gfs__pb2.String.SerializeToString,
+      ),
+      'ReadFile': grpc.unary_unary_rpc_method_handler(
+          servicer.ReadFile,
           request_deserializer=gfs__pb2.String.FromString,
           response_serializer=gfs__pb2.String.SerializeToString,
       ),
@@ -78,6 +129,21 @@ class ChunkServerToClientStub(object):
         request_serializer=gfs__pb2.String.SerializeToString,
         response_deserializer=gfs__pb2.String.FromString,
         )
+    self.GetChunkSpace = channel.unary_unary(
+        '/gfs.ChunkServerToClient/GetChunkSpace',
+        request_serializer=gfs__pb2.String.SerializeToString,
+        response_deserializer=gfs__pb2.String.FromString,
+        )
+    self.Append = channel.unary_unary(
+        '/gfs.ChunkServerToClient/Append',
+        request_serializer=gfs__pb2.String.SerializeToString,
+        response_deserializer=gfs__pb2.String.FromString,
+        )
+    self.Read = channel.unary_unary(
+        '/gfs.ChunkServerToClient/Read',
+        request_serializer=gfs__pb2.String.SerializeToString,
+        response_deserializer=gfs__pb2.String.FromString,
+        )
 
 
 class ChunkServerToClientServicer(object):
@@ -91,11 +157,47 @@ class ChunkServerToClientServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def GetChunkSpace(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def Append(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def Read(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_ChunkServerToClientServicer_to_server(servicer, server):
   rpc_method_handlers = {
       'Create': grpc.unary_unary_rpc_method_handler(
           servicer.Create,
+          request_deserializer=gfs__pb2.String.FromString,
+          response_serializer=gfs__pb2.String.SerializeToString,
+      ),
+      'GetChunkSpace': grpc.unary_unary_rpc_method_handler(
+          servicer.GetChunkSpace,
+          request_deserializer=gfs__pb2.String.FromString,
+          response_serializer=gfs__pb2.String.SerializeToString,
+      ),
+      'Append': grpc.unary_unary_rpc_method_handler(
+          servicer.Append,
+          request_deserializer=gfs__pb2.String.FromString,
+          response_serializer=gfs__pb2.String.SerializeToString,
+      ),
+      'Read': grpc.unary_unary_rpc_method_handler(
+          servicer.Read,
           request_deserializer=gfs__pb2.String.FromString,
           response_serializer=gfs__pb2.String.SerializeToString,
       ),

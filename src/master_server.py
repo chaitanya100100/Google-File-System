@@ -46,6 +46,10 @@ class MetaData(object):
         latest_chunk_handle = self.files[file_path].chunks.keys()[-1]
         return latest_chunk_handle
 
+    def get_chunk_locs(self, chunk_handle):
+        file_path = self.ch2fp[chunk_handle]
+        return self.files[file_path].chunks[chunk_handle].locs
+
     def create_new_file(self, file_path, chunk_handle):
         if file_path in self.files:
             return Status(-1, "ERROR: File exists already: {}".format(file_path))
@@ -88,6 +92,13 @@ class MasterServer(object):
     def get_available_chunkserver(self):
         return random.choice(self.chunkservers)
 
+    def list_files(self, file_path):
+        file_list = []
+        for fp in self.meta.files.keys():
+            if fp.startswith(file_path):
+                file_list.append(fp)
+        return file_list
+
     def create(self, file_path):
         chunk_handle = self.get_chunk_handle()
         status = self.meta.create_new_file(file_path, chunk_handle)
@@ -98,15 +109,54 @@ class MasterServer(object):
         locs = self.meta.files[file_path].chunks[chunk_handle].locs
         return chunk_handle, locs, status
 
-    def list_files(self, file_path):
-        file_list = []
-        for fp in self.meta.files.keys():
-            if fp.startswith(file_path):
-                file_list.append(fp)
-        return file_list
+    def append_file(self, file_path):
+        if file_path not in self.meta.files:
+            status = Status(-1, "ERROR: file doesn't exist : {}".format(file_path))
+            return None, None, status
+        latest_chunk_handle = self.meta.get_latest_chunk(file_path)
+        locs = self.meta.get_chunk_locs(latest_chunk_handle)
+        status = Status(0, "Append handled")
+        return latest_chunk_handle, locs, status
 
+    def create_chunk(self, file_path, prev_chunk_handle):
+        chunk_handle = self.get_chunk_handle()
+        status = self.meta.create_new_chunk(file_path, prev_chunk_handle, chunk_handle)
+        # TODO: check status
+        locs = self.meta.files[file_path].chunks[chunk_handle].locs
+        return chunk_handle, locs, status
 
+    def read_file(self, file_path, offset, numbytes):
+        chunk_size = cfg.chunk_size
+        start_chunk = offset // chunk_size
 
+        if start_chunk > len(self.meta.files[file_path].chunks.keys()):
+            return Status(-1, "ERROR: Offset is too large")
+
+        start_offset = offset % chunk_size
+
+        if numbytes == -1:
+            end_offset = chunk_size
+            end_chunk = len(self.meta.files[file_path].chunks.keys()) - 1
+        else:
+            end_offset = offset + numbytes - 1
+            end_chunk = end_offset // chunk_size
+            end_offset = end_offset % chunk_size
+
+        all_chunk_handles = self.meta.files[file_path].chunks.keys()[start_chunk:end_chunk+1]
+        ret = []
+        for idx, chunk_handle in enumerate(all_chunk_handles):
+            if idx == 0:
+                stof = start_offset
+            else:
+                stof = 0
+            if idx == len(all_chunk_handles) - 1:
+                enof = end_offset
+            else:
+                enof = chunk_size - 1
+            loc = self.meta.files[file_path].chunks[chunk_handle].locs[0]
+            ret.append(chunk_handle + "*" + loc + "*" + str(stof) + "*" + str(enof - stof + 1))
+        ret = "|".join(ret)
+        return Status(0, ret)
 
 class MasterServerToClientServicer(gfs_pb2_grpc.MasterServerToClientServicer):
     def __init__(self, master):
@@ -119,7 +169,6 @@ class MasterServerToClientServicer(gfs_pb2_grpc.MasterServerToClientServicer):
         st = "|".join(fpls)
         return gfs_pb2.String(st=st)
 
-
     def CreateFile(self, request, context):
         file_path = request.st
         print("Command Create {}".format(file_path))
@@ -128,11 +177,33 @@ class MasterServerToClientServicer(gfs_pb2_grpc.MasterServerToClientServicer):
         if status.v != 0:
             return gfs_pb2.String(st=status.e)
 
-        st = chunk_handle
-        for loc in locs:
-            st += "|" + loc
+        st = chunk_handle + "|" + "|".join(locs)
         return gfs_pb2.String(st=st)
 
+    def AppendFile(self, request, context):
+        file_path = request.st
+        print("Command Append {}".format(file_path))
+        latest_chunk_handle, locs, status = self.master.append_file(file_path)
+
+        if status.v != 0:
+            return gfs_pb2.String(st=status.e)
+
+        st = latest_chunk_handle + "|" + "|".join(locs)
+        return gfs_pb2.String(st=st)
+
+    def CreateChunk(self, request, context):
+        file_path, prev_chunk_handle = request.st.split("|")
+        print("Command CreateChunk {} {}".format(file_path, prev_chunk_handle))
+        chunk_handle, locs, status = self.master.create_chunk(file_path, prev_chunk_handle)
+        # TODO: check status
+        st = chunk_handle + "|" + "|".join(locs)
+        return gfs_pb2.String(st=st)
+
+    def ReadFile(self, request, context):
+        file_path, offset, numbytes = request.st.split("|")
+        print("Command ReadFile {} {} {}".format(file_path, offset, numbytes))
+        status = self.master.read_file(file_path, int(offset), int(numbytes))
+        return gfs_pb2.String(st=status.e)
 
 def serve():
     master = MasterServer()
