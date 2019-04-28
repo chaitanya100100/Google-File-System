@@ -1,0 +1,20 @@
+- make a new file
+
+check with paper
+- append request from client to server will be of form (filename)
+  - server will return the chunk handle of end of file
+  - then client will request chunk server with form (chunk handle, string)
+  - chunk server will add extra chunks if needed, then he will notify server, and then it will return to client
+
+- read request will be of form (filename, start_offset, number_of_chars_to_read)
+  - filename = name of file
+  - start_offset = start char from where we want to read, default is 0
+  - number_of_chars_to_read = number of chars to read, default is -1 suggesting that entire file is to be read
+
+
+this one is complicated, see the paper
+- write request from client to master will be of form (filename, start_offset, string_length)
+  - master will decide the chunk to modify (the one containing the start offset),
+  the chunks to delete (the ones after the offset),
+  and the chunks to add (made from string)
+- then write request from
