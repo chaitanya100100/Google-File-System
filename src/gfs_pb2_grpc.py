@@ -39,6 +39,16 @@ class MasterServerToClientStub(object):
         request_serializer=gfs__pb2.String.SerializeToString,
         response_deserializer=gfs__pb2.String.FromString,
         )
+    self.DeleteFile = channel.unary_unary(
+        '/gfs.MasterServerToClient/DeleteFile',
+        request_serializer=gfs__pb2.String.SerializeToString,
+        response_deserializer=gfs__pb2.String.FromString,
+        )
+    self.UndeleteFile = channel.unary_unary(
+        '/gfs.MasterServerToClient/UndeleteFile',
+        request_serializer=gfs__pb2.String.SerializeToString,
+        response_deserializer=gfs__pb2.String.FromString,
+        )
 
 
 class MasterServerToClientServicer(object):
@@ -80,6 +90,20 @@ class MasterServerToClientServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def DeleteFile(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def UndeleteFile(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_MasterServerToClientServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -105,6 +129,16 @@ def add_MasterServerToClientServicer_to_server(servicer, server):
       ),
       'ReadFile': grpc.unary_unary_rpc_method_handler(
           servicer.ReadFile,
+          request_deserializer=gfs__pb2.String.FromString,
+          response_serializer=gfs__pb2.String.SerializeToString,
+      ),
+      'DeleteFile': grpc.unary_unary_rpc_method_handler(
+          servicer.DeleteFile,
+          request_deserializer=gfs__pb2.String.FromString,
+          response_serializer=gfs__pb2.String.SerializeToString,
+      ),
+      'UndeleteFile': grpc.unary_unary_rpc_method_handler(
+          servicer.UndeleteFile,
           request_deserializer=gfs__pb2.String.FromString,
           response_serializer=gfs__pb2.String.SerializeToString,
       ),

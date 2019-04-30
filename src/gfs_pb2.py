@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='gfs',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\tgfs.proto\x12\x03gfs\"\x14\n\x06String\x12\n\n\x02st\x18\x01 \x01(\t\"\x07\n\x05\x45mpty2\xe6\x01\n\x14MasterServerToClient\x12\'\n\tListFiles\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12(\n\nCreateFile\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12(\n\nAppendFile\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12)\n\x0b\x43reateChunk\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12&\n\x08ReadFile\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x32\xb2\x01\n\x13\x43hunkServerToClient\x12$\n\x06\x43reate\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12+\n\rGetChunkSpace\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12$\n\x06\x41ppend\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12\"\n\x04Read\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\tgfs.proto\x12\x03gfs\"\x14\n\x06String\x12\n\n\x02st\x18\x01 \x01(\t\"\x07\n\x05\x45mpty2\xbc\x02\n\x14MasterServerToClient\x12\'\n\tListFiles\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12(\n\nCreateFile\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12(\n\nAppendFile\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12)\n\x0b\x43reateChunk\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12&\n\x08ReadFile\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12(\n\nDeleteFile\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12*\n\x0cUndeleteFile\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x32\xb2\x01\n\x13\x43hunkServerToClient\x12$\n\x06\x43reate\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12+\n\rGetChunkSpace\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12$\n\x06\x41ppend\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x12\"\n\x04Read\x12\x0b.gfs.String\x1a\x0b.gfs.String\"\x00\x62\x06proto3')
 )
 
 
@@ -107,7 +107,7 @@ _MASTERSERVERTOCLIENT = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   serialized_start=50,
-  serialized_end=280,
+  serialized_end=366,
   methods=[
   _descriptor.MethodDescriptor(
     name='ListFiles',
@@ -154,6 +154,24 @@ _MASTERSERVERTOCLIENT = _descriptor.ServiceDescriptor(
     output_type=_STRING,
     serialized_options=None,
   ),
+  _descriptor.MethodDescriptor(
+    name='DeleteFile',
+    full_name='gfs.MasterServerToClient.DeleteFile',
+    index=5,
+    containing_service=None,
+    input_type=_STRING,
+    output_type=_STRING,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='UndeleteFile',
+    full_name='gfs.MasterServerToClient.UndeleteFile',
+    index=6,
+    containing_service=None,
+    input_type=_STRING,
+    output_type=_STRING,
+    serialized_options=None,
+  ),
 ])
 _sym_db.RegisterServiceDescriptor(_MASTERSERVERTOCLIENT)
 
@@ -166,8 +184,8 @@ _CHUNKSERVERTOCLIENT = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=1,
   serialized_options=None,
-  serialized_start=283,
-  serialized_end=461,
+  serialized_start=369,
+  serialized_end=547,
   methods=[
   _descriptor.MethodDescriptor(
     name='Create',

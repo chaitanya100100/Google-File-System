@@ -30,6 +30,7 @@ class File(object):
     def __init__(self, file_path):
         self.file_path = file_path
         self.chunks = OrderedDict()
+        self.delete = False
 
 class MetaData(object):
     def __init__(self):
@@ -42,8 +43,10 @@ class MetaData(object):
         for cs in self.locs:
             self.locs_dict[cs] = []
 
+        self.to_delete = set()
+
     def get_latest_chunk(self, file_path):
-        latest_chunk_handle = self.files[file_path].chunks.keys()[-1]
+        latest_chunk_handle = list(self.files[file_path].chunks.keys())[-1]
         return latest_chunk_handle
 
     def get_chunk_locs(self, chunk_handle):
@@ -80,6 +83,13 @@ class MetaData(object):
         self.ch2fp[chunk_handle] = file_path
         return Status(0, "New Chunk Created")
 
+    def mark_delete(self, file_path):
+        self.files[file_path].delete = True
+        self.to_delete.add(file_path)
+
+    def unmark_delete(self, file_path):
+        self.files[file_path].delete = False
+        self.to_delete.remove(file_path)
 
 class MasterServer(object):
     def __init__(self):
@@ -92,6 +102,14 @@ class MasterServer(object):
     def get_available_chunkserver(self):
         return random.choice(self.chunkservers)
 
+    def check_valid_file(self, file_path):
+        if file_path not in self.meta.files:
+            return Status(-1, "ERROR: file {} doesn't exist".format(file_path))
+        elif self.meta.files[file_path].delete is True:
+            return Status(-1, "ERROR: file {} is already deleted".format(file_path))
+        else:
+            return Status(0, "SUCCESS: file {} exists and not deleted".format(file_path))
+
     def list_files(self, file_path):
         file_list = []
         for fp in self.meta.files.keys():
@@ -99,7 +117,7 @@ class MasterServer(object):
                 file_list.append(fp)
         return file_list
 
-    def create(self, file_path):
+    def create_file(self, file_path):
         chunk_handle = self.get_chunk_handle()
         status = self.meta.create_new_file(file_path, chunk_handle)
 
@@ -110,9 +128,10 @@ class MasterServer(object):
         return chunk_handle, locs, status
 
     def append_file(self, file_path):
-        if file_path not in self.meta.files:
-            status = Status(-1, "ERROR: file doesn't exist : {}".format(file_path))
+        status = self.check_valid_file(file_path)
+        if status.v != 0:
             return None, None, status
+
         latest_chunk_handle = self.meta.get_latest_chunk(file_path)
         locs = self.meta.get_chunk_locs(latest_chunk_handle)
         status = Status(0, "Append handled")
@@ -126,23 +145,27 @@ class MasterServer(object):
         return chunk_handle, locs, status
 
     def read_file(self, file_path, offset, numbytes):
+        status = self.check_valid_file(file_path)
+        if status.v != 0:
+            return status
+
         chunk_size = cfg.chunk_size
         start_chunk = offset // chunk_size
-
-        if start_chunk > len(self.meta.files[file_path].chunks.keys()):
+        all_chunks = list(self.meta.files[file_path].chunks.keys())
+        if start_chunk > len(all_chunks):
             return Status(-1, "ERROR: Offset is too large")
 
         start_offset = offset % chunk_size
 
         if numbytes == -1:
             end_offset = chunk_size
-            end_chunk = len(self.meta.files[file_path].chunks.keys()) - 1
+            end_chunk = len(all_chunks) - 1
         else:
             end_offset = offset + numbytes - 1
             end_chunk = end_offset // chunk_size
             end_offset = end_offset % chunk_size
 
-        all_chunk_handles = self.meta.files[file_path].chunks.keys()[start_chunk:end_chunk+1]
+        all_chunk_handles = all_chunks[start_chunk:end_chunk+1]
         ret = []
         for idx, chunk_handle in enumerate(all_chunk_handles):
             if idx == 0:
@@ -158,6 +181,32 @@ class MasterServer(object):
         ret = "|".join(ret)
         return Status(0, ret)
 
+    def delete_file(self, file_path):
+        status = self.check_valid_file(file_path)
+        if status.v != 0:
+            return status
+
+        try:
+            self.meta.mark_delete(file_path)
+        except Exception as e:
+            return Status(-1, "ERROR: " + str(e))
+        else:
+            return Status(0, "SUCCESS: file {} is marked deleted".format(file_path))
+
+    def undelete_file(self, file_path):
+        if file_path not in self.meta.files:
+            return Status(-1, "ERROR: file {} doesn't exist, already garbage collected or never created".format(file_path))
+        elif self.meta.files[file_path].delete is not True:
+            return Status(-1, "ERROR: file {} is not marked deleted".format(file_path))
+
+        try:
+            self.meta.unmark_delete(file_path)
+        except Exception as e:
+            return Status(-1, "ERROR: " + str(e))
+        else:
+            return Status(0, "SUCCESS: file {} is restored".format(file_path))
+
+
 class MasterServerToClientServicer(gfs_pb2_grpc.MasterServerToClientServicer):
     def __init__(self, master):
         self.master = master
@@ -172,7 +221,7 @@ class MasterServerToClientServicer(gfs_pb2_grpc.MasterServerToClientServicer):
     def CreateFile(self, request, context):
         file_path = request.st
         print("Command Create {}".format(file_path))
-        chunk_handle, locs, status = self.master.create(file_path)
+        chunk_handle, locs, status = self.master.create_file(file_path)
 
         if status.v != 0:
             return gfs_pb2.String(st=status.e)
@@ -203,6 +252,18 @@ class MasterServerToClientServicer(gfs_pb2_grpc.MasterServerToClientServicer):
         file_path, offset, numbytes = request.st.split("|")
         print("Command ReadFile {} {} {}".format(file_path, offset, numbytes))
         status = self.master.read_file(file_path, int(offset), int(numbytes))
+        return gfs_pb2.String(st=status.e)
+
+    def DeleteFile(self, request, context):
+        file_path = request.st
+        print("Command Delete {}".format(file_path))
+        status = self.master.delete_file(file_path)
+        return gfs_pb2.String(st=status.e)
+
+    def UndeleteFile(self, request, context):
+        file_path = request.st
+        print("Command Undelete {}".format(file_path))
+        status = self.master.undelete_file(file_path)
         return gfs_pb2.String(st=status.e)
 
 def serve():
