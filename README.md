@@ -34,7 +34,7 @@ A python implementation of Google File System
 - The code is gradually extendable by adding features one by one.
 
 ## Demo
-After starting chunk servers and master server, run following series of commands to have a glimpse of GFS.
+After starting chunk servers and master server, run the following series of commands to have a glimpse of GFS.
 ```
 python client.py create /file1
 python client.py create /dir1/file2
