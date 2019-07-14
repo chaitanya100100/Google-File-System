@@ -2,7 +2,7 @@
 A python implementation of Google File System
 
 ## Compile
-- run `bash recompile.sh`
+- Run `bash recompile.sh`
 
 ## Run
 - In one terminal, run `python chunk_server.py` to start chunk servers.
@@ -11,17 +11,17 @@ A python implementation of Google File System
 
 ### Commands
 - `python client.py create <file_path>`
-  - Creates a new file with given absolute file path <file_path>.
+  - Creates a new file with given absolute file path `<file_path>`
 - `python client.py list <prefix>`
-  - Lists all files whose absolute path have prefix <prefix>.
+  - Lists all files whose absolute path have prefix `<prefix>`
 - `python client.py append <file_path> <string>`
-  - Appends <string> to file <file_path>.
+  - Appends `<string>` to file `<file_path>`
 - `python client.py read <file_path> <offset> <len>`
-  - Reads <len> characters of file <file_path> starting from <offset>
+  - Reads `<len>` characters of file `<file_path>` starting from `<offset>`
 - `python client.py delete <file_path>`
-  - Deletes file <file_path>
+  - Deletes file `<file_path>`
 - `python client.py undelete <file_path>`
-  - Restore the deleted file <file_path>
+  - Restore the deleted file `<file_path>`
 
 ### Miscellaneous Details
 - `common.py` contains common metadata including port numbers of master server and chunk servers. It also contains some common code.
