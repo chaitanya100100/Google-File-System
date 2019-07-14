@@ -4,13 +4,13 @@ A python implementation of Google File System
 ## Compile
 - Run `bash recompile.sh`
 
+## Dependency
+- gRPC
+
 ## Run
 - In one terminal, run `python chunk_server.py` to start chunk servers.
 - In other terminal, run `python master_server.py` to start master server.
 - From the third terminal, run `python client.py <command> <file_path> <args>` to interact with file system.
-
-## Dependencies
-- gRPC
 
 ### Commands
 - `python client.py create <file_path>`
