@@ -9,6 +9,9 @@ A python implementation of Google File System
 - In other terminal, run `python master_server.py` to start master server.
 - From the third terminal, run `python client.py <command> <file_path> <args>` to interact with file system.
 
+## Dependencies
+- gRPC
+
 ### Commands
 - `python client.py create <file_path>`
   - Creates a new file with given absolute file path `<file_path>`
@@ -21,17 +24,17 @@ A python implementation of Google File System
 - `python client.py delete <file_path>`
   - Deletes file `<file_path>`
 - `python client.py undelete <file_path>`
-  - Restore the deleted file `<file_path>`
+  - Restores the deleted file `<file_path>`
 
 ### Miscellaneous Details
-- `common.py` contains common metadata including port numbers of master server and chunk servers. It also contains some common code.
+- `common.py` contains common metadata including port numbers of master server and chunk servers, chunk size, etc. It also contains some common code.
 - Proper logging is provided in each of chunk server, master server and client.
 - Most of the errors are handled in the code.
 - As per original GFS, files are identified by absolute paths. There is no concept of directories. GFS has a module which keeps checks on file path and directory structure consistencies. It is not implemented here.
 - The code is gradually extendable by adding features one by one.
 
 ### Demo
-After starting all relevant servers, run following series of commands to have a glimpse of GFS.
+After starting chunk servers and master server, run following series of commands to have a glimpse of GFS.
 ```
 python client.py create /file1
 python client.py create /dir1/file2
